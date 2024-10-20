@@ -1,0 +1,24 @@
+version: '3'
+services:
+  app:
+    image: myapp-image  # Obraz aplikacji (możesz zmienić nazwę)
+    build:
+      context: .
+      dockerfile: Dockerfile  # Dockerfile Twojej aplikacji
+    ports:
+      - "8080:8080"  # Mapowanie portów aplikacji Spring Boot
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/etutor
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=admin
+    depends_on:
+      - db  # Aplikacja zależy od kontenera bazy danych
+
+  db:
+    image: postgres:17  # Obraz PostgreSQL
+    environment:
+      POSTGRES_DB: etutor  # Nazwa bazy danych
+      POSTGRES_USER: admin  # Użytkownik bazy danych
+      POSTGRES_PASSWORD: admin  # Hasło bazy danych
+    ports:
+      - "5432:5432"  # Mapowanie portów PostgreSQL
