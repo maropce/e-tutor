@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    image: myapp-image  # Obraz aplikacji (możesz zmienić nazwę)
+    image: myapp-image  # Obraz aplikacji
     build:
       context: .
       dockerfile: Dockerfile  # Dockerfile Twojej aplikacji
