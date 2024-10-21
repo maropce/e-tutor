@@ -1,6 +1,11 @@
 app:
   url: http://localhost:8080
 
+springdoc:
+  swagger-ui:
+    disable-swagger-default-url: true
+    path: /api
+
 spring:
   application:
     name: e-tutor
