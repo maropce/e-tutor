@@ -22,3 +22,4 @@ services:
       POSTGRES_PASSWORD: admin  # Hasło bazy danych
     ports:
       - "5432:5432"  # Mapowanie portów PostgreSQL
+

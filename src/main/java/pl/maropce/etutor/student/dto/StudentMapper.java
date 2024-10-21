@@ -5,7 +5,7 @@ import pl.maropce.etutor.student.Student;
 public class StudentMapper {
 
     public static StudentDTO toDTO(Student student) {
-        StudentDTO dto = new StudentDTO();
+        StudentDTO dto = StudentDTO.builder().build();
 
         dto.setId(student.getId());
         dto.setFirstName(student.getFirstName());

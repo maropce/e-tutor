@@ -1,5 +1,5 @@
 app:
-  url: http://http://localhost:8080
+  url: http://localhost:8080
 
 spring:
   application:
@@ -9,7 +9,6 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driverClassName: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: create-drop
