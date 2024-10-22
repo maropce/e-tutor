@@ -15,7 +15,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "LOWER(s.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(s.discord) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(s.phone) LIKE LOWER(CONCAT('%', :keyword, '%'))" )
-    List<Student> searchStudents(String keyword);
+    List<Student> findByKeyword(String keyword);
 
 
 }

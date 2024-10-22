@@ -27,8 +27,25 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<StudentDTO>> getAllStudents() {
-        List<StudentDTO> studentDTOS = studentService.findAll();
+    @Operation(
+            summary = "Get all students or search by keyword",
+            description = "Returns a list of all students or filters them by a keyword if provided. The keyword is used to perform a case-insensitive search across multiple fields: first name, last name, Discord username, and phone number. If the keyword matches any part of these fields, the corresponding students are returned.",
+            parameters = {
+                    @Parameter(name = "keyword", description = "Optional keyword to search for students")
+            }
+    )
+    public ResponseEntity<List<StudentDTO>> getAllStudents(
+            @RequestParam(required = false) String keyword) {
+
+        List<StudentDTO> studentDTOS;
+
+        if (keyword == null || keyword.isEmpty()) {
+            studentDTOS = studentService.findAll();
+        } else {
+            studentDTOS = studentService.findByKeyword(keyword);
+        }
+
+
 
         return ResponseEntity.ok(studentDTOS);
     }
@@ -54,7 +71,7 @@ public class StudentController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<StudentDTO> updateStudent(
-            @PathVariable Long id, @RequestBody Map<String, Object> updates) throws URISyntaxException {
+            @PathVariable Long id, @RequestBody Map<String, Object> updates) {
 
         StudentDTO updatedStudent = studentService.update(id, updates);
 
@@ -62,21 +79,6 @@ public class StudentController {
 
         return ResponseEntity.ok(savedStudent);
 
-    }
-
-
-    @GetMapping("/search")
-    @Operation(
-            summary = "Search students by keyword",
-            description = "Search for students by first name, last name, Discord username, or phone number. The search is case-insensitive and supports partial matches.",
-            parameters = {
-                    @Parameter(name = "keyword", description = "The keyword to search for in students' first name, last name, Discord, or phone number", required = true)
-            }
-    )
-    public ResponseEntity<List<StudentDTO>> searchStudents(@RequestParam String keyword) {
-        List<StudentDTO> studentDTOS = studentService.searchStudents(keyword);
-
-        return ResponseEntity.ok(studentDTOS);
     }
 
     @ExceptionHandler(StudentNotFoundException.class)

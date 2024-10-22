@@ -1,7 +1,5 @@
 package pl.maropce.etutor.student;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.stereotype.Service;
 import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
@@ -74,10 +72,9 @@ public class StudentService {
     }
 
 
-    public List<StudentDTO> searchStudents(String keyword) {
-        List<Student> students = studentRepository.searchStudents(keyword);
+    public List<StudentDTO> findByKeyword(String keyword) {
+        List<Student> students = studentRepository.findByKeyword(keyword);
 
         return students.stream().map(StudentMapper::toDTO).toList();
     }
-
 }
