@@ -1,5 +1,7 @@
 package pl.maropce.etutor.student;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,6 +62,21 @@ public class StudentController {
 
         return ResponseEntity.ok(savedStudent);
 
+    }
+
+
+    @GetMapping("/search")
+    @Operation(
+            summary = "Search students by keyword",
+            description = "Search for students by first name, last name, Discord username, or phone number. The search is case-insensitive and supports partial matches.",
+            parameters = {
+                    @Parameter(name = "keyword", description = "The keyword to search for in students' first name, last name, Discord, or phone number", required = true)
+            }
+    )
+    public ResponseEntity<List<StudentDTO>> searchStudents(@RequestParam String keyword) {
+        List<StudentDTO> studentDTOS = studentService.searchStudents(keyword);
+
+        return ResponseEntity.ok(studentDTOS);
     }
 
     @ExceptionHandler(StudentNotFoundException.class)
