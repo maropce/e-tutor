@@ -1,6 +1,10 @@
 package pl.maropce.etutor.student;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
 
@@ -76,5 +80,9 @@ public class StudentService {
         List<Student> students = studentRepository.findByKeyword(keyword);
 
         return students.stream().map(StudentMapper::toDTO).toList();
+    }
+
+    public void deleteById(Long id) {
+        studentRepository.deleteById(id);
     }
 }

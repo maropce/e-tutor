@@ -71,7 +71,7 @@ public class AppConfig {
                     .phone("123-456-78" + (random.nextInt(10)))
                     .discord("discord" + (i + 1))
                     .about(ABOUT_DESCRIPTIONS[random.nextInt(ABOUT_DESCRIPTIONS.length)])
-                    .classType(CLASS_TYPES[random.nextInt(CLASS_TYPES.length)]) // Losowy typ klasy
+                    .classType(CLASS_TYPES[random.nextInt(CLASS_TYPES.length)])
                     .build();
             students.add(student);
         }

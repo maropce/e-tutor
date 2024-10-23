@@ -45,8 +45,6 @@ public class StudentController {
             studentDTOS = studentService.findByKeyword(keyword);
         }
 
-
-
         return ResponseEntity.ok(studentDTOS);
     }
 
@@ -79,6 +77,12 @@ public class StudentController {
 
         return ResponseEntity.ok(savedStudent);
 
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteStudent(@PathVariable Long id) {
+        studentService.deleteById(id);
     }
 
     @ExceptionHandler(StudentNotFoundException.class)
