@@ -85,10 +85,4 @@ public class StudentController {
     public void deleteStudent(@PathVariable Long id) {
         studentService.deleteById(id);
     }
-
-    @ExceptionHandler(StudentNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String exceptionHandler(StudentNotFoundException ex) {
-        return ex.getMessage();
-    }
 }

@@ -3,6 +3,7 @@ package pl.maropce.etutor.lesson;
 import org.springframework.stereotype.Service;
 import pl.maropce.etutor.lesson.dto.LessonDTO;
 import pl.maropce.etutor.lesson.dto.LessonMapper;
+import pl.maropce.etutor.lesson.exception.InvalidLessonDates;
 import pl.maropce.etutor.lesson.exception.LessonNotFoundException;
 import pl.maropce.etutor.lesson.exception.LessonTimesOverlapException;
 import pl.maropce.etutor.student.Student;
@@ -52,6 +53,10 @@ public class LessonService {
 
     public LessonDTO save(Long studentId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 
+        if(!isDateOfLessonSetProperly(startDateTime, endDateTime)) {
+            throw new InvalidLessonDates();
+        }
+
         if (lessonRepository.existsOverlappingLesson(startDateTime, endDateTime)) {
             throw new LessonTimesOverlapException();
         }
@@ -68,6 +73,10 @@ public class LessonService {
                 LessonMapper.toEntity(lessonDTO));
 
         return LessonMapper.toDTO(save);
+    }
+
+    private boolean isDateOfLessonSetProperly(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return startDateTime.isBefore(endDateTime);
     }
 
 

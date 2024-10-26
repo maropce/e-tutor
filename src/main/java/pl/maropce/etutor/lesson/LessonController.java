@@ -82,18 +82,4 @@ public class LessonController {
     public void deleteStudent(@PathVariable Long id) {
         lessonService.deleteById(id);
     }
-
-
-    @ExceptionHandler({StudentNotFoundException.class, LessonNotFoundException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String notFoundExceptionHandler(RuntimeException ex) {
-        return ex.getMessage();
-    }
-
-    @ExceptionHandler(LessonTimesOverlapException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public String LessonTimesOverlapsExceptionHandler(RuntimeException ex) {
-        return ex.getMessage();
-    }
-
 }
