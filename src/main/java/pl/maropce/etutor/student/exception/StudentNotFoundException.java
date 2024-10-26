@@ -1,4 +1,4 @@
-package pl.maropce.etutor.student;
+package pl.maropce.etutor.student.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

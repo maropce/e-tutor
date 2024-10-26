@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.maropce.etutor.config.AppConfig;
 import pl.maropce.etutor.student.dto.StudentDTO;
+import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
 import java.net.URI;
 import java.net.URISyntaxException;

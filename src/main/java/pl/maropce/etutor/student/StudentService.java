@@ -1,12 +1,9 @@
 package pl.maropce.etutor.student;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
+import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
 import java.util.List;
 import java.util.Map;

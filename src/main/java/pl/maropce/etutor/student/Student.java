@@ -24,4 +24,5 @@ public class Student {
     private String discord;
     private String about;
     private String classType;
+
 }
