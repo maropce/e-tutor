@@ -2,14 +2,13 @@ package pl.maropce.etutor.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
+import pl.maropce.etutor.lesson.LessonService;
 import pl.maropce.etutor.student.StudentService;
 import pl.maropce.etutor.student.dto.StudentDTO;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,12 +18,14 @@ import java.util.Random;
 public class AppConfig {
 
     private final StudentService studentService;
+    private final LessonService lessonService;
 
     @Value("${app.url}")
     private String applicationURL;
 
-    public AppConfig(StudentService studentService) {
+    public AppConfig(StudentService studentService, LessonService lessonService) {
         this.studentService = studentService;
+        this.lessonService = lessonService;
     }
 
     private static final String[] FIRST_NAMES = {
@@ -79,5 +80,36 @@ public class AppConfig {
         for (StudentDTO student : students) {
             studentService.save(student);
         }
+    }
+
+    @PostConstruct
+    public void addSampleLessons() {
+        List<StudentDTO> students = studentService.findAll();
+        Random random = new Random();
+        LocalDateTime now = LocalDateTime.now();
+
+        students.forEach(student -> {
+            int numberOfLessons = random.nextInt(4) + 1;
+
+            for (int i = 0; i < numberOfLessons; i++) {
+                LocalDateTime start;
+                LocalDateTime end;
+
+                do {
+                    int hourOffset = random.nextInt(8) + 13;  // Generates a random hour between 8:00 and 20:00
+                    int minuteOffset = random.nextBoolean() ? 0 : 30;  // Randomly picks 0 or 30 minutes
+
+                    start = now.plusDays(random.nextInt(30))
+                            .withHour(hourOffset)
+                            .withMinute(minuteOffset)
+                            .withSecond(0)
+                            .withNano(0);
+                    int duration = random.nextInt(2) + 1;  // Randomly sets lesson duration to 1 or 2 hours
+                    end = start.plusHours(duration);
+                } while (lessonService.existsOverlappingLesson(start, end));
+
+                lessonService.save(student.getId(), start, end);
+            }
+        });
     }
 }

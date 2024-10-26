@@ -75,5 +75,9 @@ public class LessonService {
         lessonRepository.deleteById(id);
     }
 
+    public boolean existsOverlappingLesson(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return lessonRepository.existsOverlappingLesson(startDateTime, endDateTime);
+    }
+
 
 }
