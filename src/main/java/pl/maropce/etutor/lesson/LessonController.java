@@ -65,6 +65,7 @@ public class LessonController {
             },
             responses = {
                     @ApiResponse(responseCode = "200", description = "Lesson created successfully"),
+                    @ApiResponse(responseCode = "400", description = "Invalid lesson dates. Probably start date is after end date"),
                     @ApiResponse(responseCode = "409", description = "Lesson times overlap with an existing lesson")
             }
     )
