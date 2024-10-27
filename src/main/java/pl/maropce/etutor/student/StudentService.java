@@ -7,6 +7,7 @@ import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -39,7 +40,9 @@ public class StudentService {
     }
 
     public StudentDTO update(Long id, Map<String, Object> updates) {
-        StudentDTO student = findById(id);
+
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
 
         updates.forEach((key, value) -> {
             switch (key) {
@@ -69,14 +72,18 @@ public class StudentService {
             }
         });
 
-        return student;
-    }
+        Student save = studentRepository.save(student);
 
+        return StudentMapper.toDTO(save);
+    }
 
     public List<StudentDTO> findByKeyword(String keyword) {
         List<Student> students = studentRepository.findByKeyword(keyword);
 
-        return students.stream().map(StudentMapper::toDTO).toList();
+        return students
+                .stream()
+                .map(StudentMapper::toDTO)
+                .toList();
     }
 
     public void deleteById(Long id) {

@@ -8,9 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.maropce.etutor.lesson.dto.LessonDTO;
-import pl.maropce.etutor.lesson.exception.LessonNotFoundException;
-import pl.maropce.etutor.lesson.exception.LessonTimesOverlapException;
-import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;

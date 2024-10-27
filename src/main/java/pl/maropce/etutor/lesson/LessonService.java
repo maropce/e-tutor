@@ -7,9 +7,11 @@ import pl.maropce.etutor.lesson.exception.InvalidLessonDates;
 import pl.maropce.etutor.lesson.exception.LessonNotFoundException;
 import pl.maropce.etutor.lesson.exception.LessonTimesOverlapException;
 import pl.maropce.etutor.student.Student;
+import pl.maropce.etutor.student.StudentRepository;
 import pl.maropce.etutor.student.StudentService;
 import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
+import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,10 +21,12 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final StudentService studentService;
+    private final StudentRepository studentRepository;
 
-    public LessonService(LessonRepository lessonRepository, StudentService studentService) {
+    public LessonService(LessonRepository lessonRepository, StudentService studentService, StudentRepository studentRepository, StudentRepository studentRepository1) {
         this.lessonRepository = lessonRepository;
         this.studentService = studentService;
+        this.studentRepository = studentRepository1;
     }
 
     public List<LessonDTO> findAll() {
@@ -41,8 +45,8 @@ public class LessonService {
 
     public List<LessonDTO> findAllByStudent(Long studentId) {
 
-        Student student = StudentMapper.toEntity(
-                studentService.findById(studentId));
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentNotFoundException(studentId));
 
         return lessonRepository.findAllByStudent(student)
                 .stream()
@@ -61,16 +65,16 @@ public class LessonService {
             throw new LessonTimesOverlapException();
         }
 
-        StudentDTO studentDTO = studentService.findById(studentId);
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new StudentNotFoundException(studentId));
 
-        LessonDTO lessonDTO = LessonDTO.builder()
+        Lesson lesson = Lesson.builder()
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
-                .student(studentDTO)
+                .student(student)
                 .build();
 
-        Lesson save = lessonRepository.save(
-                LessonMapper.toEntity(lessonDTO));
+        Lesson save = lessonRepository.save(lesson);
 
         return LessonMapper.toDTO(save);
     }
@@ -78,7 +82,6 @@ public class LessonService {
     private boolean isDateOfLessonSetProperly(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return startDateTime.isBefore(endDateTime);
     }
-
 
     public void deleteById(Long id) {
         lessonRepository.deleteById(id);

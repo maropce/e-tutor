@@ -74,9 +74,7 @@ public class StudentController {
 
         StudentDTO updatedStudent = studentService.update(id, updates);
 
-        StudentDTO savedStudent = studentService.save(updatedStudent);
-
-        return ResponseEntity.ok(savedStudent);
+        return ResponseEntity.ok(updatedStudent);
 
     }
 
