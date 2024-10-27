@@ -1,5 +1,6 @@
 package pl.maropce.etutor.lesson.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.OneToOne;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,5 +20,6 @@ public class LessonDTO {
     private Long id;
     private LocalDateTime startDateTime;
     private LocalDateTime endDateTime;
+    @JsonIgnore
     private StudentDTO student;
 }
