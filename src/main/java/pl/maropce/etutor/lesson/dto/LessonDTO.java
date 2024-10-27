@@ -18,7 +18,9 @@ import java.util.Date;
 public class LessonDTO {
 
     private Long id;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime startDateTime;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDateTime;
     @JsonIgnore
     private StudentDTO student;
