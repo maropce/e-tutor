@@ -66,13 +66,11 @@ public class LessonController {
                     @ApiResponse(responseCode = "409", description = "Lesson times overlap with an existing lesson")
             }
     )
-    public ResponseEntity<LessonDTO> createNewLesson(
-            @RequestParam Long studentId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime) {
+    public ResponseEntity<LessonDTO> createNewLesson(@RequestBody CreateLessonRequest request) {
 
+        System.out.println(request);
         return ResponseEntity.ok(
-                lessonService.save(studentId, startDateTime, endDateTime));
+                lessonService.save(request.getStudentId(), request.getStartDateTime(), request.getEndDateTime()));
     }
 
     @DeleteMapping("{id}")
