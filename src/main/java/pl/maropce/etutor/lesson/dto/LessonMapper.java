@@ -11,7 +11,7 @@ public class LessonMapper {
                 .id(lesson.getId())
                 .startDateTime(lesson.getStartDateTime())
                 .endDateTime(lesson.getEndDateTime())
-                .student(StudentMapper.toDTO(lesson.getStudent()))
+                //.studentId(lesson.getStudent().getId())
                 .build();
     }
 
@@ -21,7 +21,7 @@ public class LessonMapper {
                 .id(lessonDTO.getId())
                 .startDateTime(lessonDTO.getStartDateTime())
                 .endDateTime(lessonDTO.getEndDateTime())
-                .student(StudentMapper.toEntity(lessonDTO.getStudent()))
+                //.student()
                 .build();
     }
 }

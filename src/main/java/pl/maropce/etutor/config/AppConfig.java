@@ -4,9 +4,11 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
+import pl.maropce.etutor.lesson.Lesson;
+import pl.maropce.etutor.lesson.LessonRepository;
 import pl.maropce.etutor.lesson.LessonService;
-import pl.maropce.etutor.student.StudentService;
-import pl.maropce.etutor.student.dto.StudentDTO;
+import pl.maropce.etutor.student.Student;
+import pl.maropce.etutor.student.StudentRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,14 +19,16 @@ import java.util.Random;
 @Getter
 public class AppConfig {
 
-    private final StudentService studentService;
+    private final StudentRepository studentRepository;
+    private final LessonRepository lessonRepository;
     private final LessonService lessonService;
 
     @Value("${app.url}")
     private String applicationURL;
 
-    public AppConfig(StudentService studentService, LessonService lessonService) {
-        this.studentService = studentService;
+    public AppConfig(StudentRepository studentRepository, LessonRepository lessonRepository, LessonService lessonService) {
+        this.studentRepository = studentRepository;
+        this.lessonRepository = lessonRepository;
         this.lessonService = lessonService;
     }
 
@@ -59,32 +63,34 @@ public class AppConfig {
     };
 
     @PostConstruct
-    public void saveStudents() {
-        List<StudentDTO> students = new ArrayList<>();
+    public void addStudentsWithLessons() {
+        List<Student> students = saveStudents();
+        addSampleLessons(students);
+    }
+
+    private List<Student> saveStudents() {
+        List<Student> students = new ArrayList<>();
         Random random = new Random();
 
         for (int i = 0; i < 12; i++) {
-            StudentDTO student = StudentDTO.builder()
+            Student student = Student.builder()
                     .id((long) (i + 1))
                     .firstName(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)])
                     .lastName(LAST_NAMES[random.nextInt(LAST_NAMES.length)])
                     .email("student" + (i + 1) + "@example.com")
-                    .phone("123-456-78" + (random.nextInt(10)))
+                    .phone((random.nextInt(899)+100) +  " " + (random.nextInt(899)+100) + " " + (random.nextInt(899)+100))
                     .discord("discord" + (i + 1))
                     .about(ABOUT_DESCRIPTIONS[random.nextInt(ABOUT_DESCRIPTIONS.length)])
                     .classType(CLASS_TYPES[random.nextInt(CLASS_TYPES.length)])
+                    .lessons(new ArrayList<>())
                     .build();
             students.add(student);
         }
 
-        for (StudentDTO student : students) {
-            studentService.save(student);
-        }
+        return studentRepository.saveAll(students);
     }
 
-    @PostConstruct
-    public void addSampleLessons() {
-        List<StudentDTO> students = studentService.findAll();
+    private void addSampleLessons(List<Student> students) {
         Random random = new Random();
         LocalDateTime now = LocalDateTime.now();
 
@@ -108,8 +114,18 @@ public class AppConfig {
                     end = start.plusHours(duration);
                 } while (lessonService.existsOverlappingLesson(start, end));
 
-                lessonService.save(student.getId(), start, end);
+                Lesson lesson = Lesson.builder()
+                        .student(student)
+                        .startDateTime(start)
+                        .endDateTime(end)
+                        .build();
+
+                lessonRepository.save(lesson);
+
+
             }
+
+            studentRepository.save(student);
         });
     }
 }
