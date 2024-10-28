@@ -12,8 +12,6 @@ import java.util.List;
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    List<Lesson> findAllByStudentId(Long studentId);
-
     List<Lesson> findAllByStudent(Student student);
 
     @Query("SELECT COUNT(l) > 0 FROM Lesson l WHERE " +
