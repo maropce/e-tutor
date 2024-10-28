@@ -1,6 +1,7 @@
 package pl.maropce.etutor.lesson.dto;
 
 import pl.maropce.etutor.lesson.Lesson;
+import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
 
 public class LessonMapper {
@@ -11,17 +12,17 @@ public class LessonMapper {
                 .id(lesson.getId())
                 .startDateTime(lesson.getStartDateTime())
                 .endDateTime(lesson.getEndDateTime())
-                //.studentId(lesson.getStudent().getId())
+                .studentId(lesson.getStudent().getId())
                 .build();
     }
 
-    public static Lesson toEntity(LessonDTO lessonDTO) {
+    public static Lesson toEntity(LessonDTO lessonDTO, StudentDTO studentDTO) {
 
         return Lesson.builder()
                 .id(lessonDTO.getId())
                 .startDateTime(lessonDTO.getStartDateTime())
                 .endDateTime(lessonDTO.getEndDateTime())
-                //.student()
+                .student(StudentMapper.toEntity(studentDTO))
                 .build();
     }
 }

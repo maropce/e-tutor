@@ -18,5 +18,5 @@ public class LessonDTO {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDateTime;
 
-    //private Long studentId;
+    private Long studentId;
 }

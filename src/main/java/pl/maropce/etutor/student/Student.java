@@ -26,7 +26,7 @@ public class Student {
     private String about;
     private String classType;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Lesson> lessons = new ArrayList<>();
+//    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<Lesson> lessons = new ArrayList<>();
 
 }

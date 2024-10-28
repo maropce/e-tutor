@@ -5,6 +5,7 @@ import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
 import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +34,7 @@ public class StudentService {
     }
 
     public StudentDTO save(StudentDTO student) {
+
         Student save = studentRepository.save(
                 StudentMapper.toEntity(student));
 
