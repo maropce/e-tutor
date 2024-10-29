@@ -5,10 +5,8 @@ import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
 import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class StudentService {

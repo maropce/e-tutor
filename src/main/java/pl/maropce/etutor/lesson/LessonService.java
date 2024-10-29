@@ -8,9 +8,6 @@ import pl.maropce.etutor.lesson.exception.LessonNotFoundException;
 import pl.maropce.etutor.lesson.exception.LessonTimesOverlapException;
 import pl.maropce.etutor.student.Student;
 import pl.maropce.etutor.student.StudentRepository;
-import pl.maropce.etutor.student.StudentService;
-import pl.maropce.etutor.student.dto.StudentDTO;
-import pl.maropce.etutor.student.dto.StudentMapper;
 import pl.maropce.etutor.student.exception.StudentNotFoundException;
 
 import java.time.LocalDateTime;
@@ -20,13 +17,11 @@ import java.util.List;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
-    private final StudentService studentService;
     private final StudentRepository studentRepository;
 
-    public LessonService(LessonRepository lessonRepository, StudentService studentService, StudentRepository studentRepository, StudentRepository studentRepository1) {
+    public LessonService(LessonRepository lessonRepository, StudentRepository studentRepository) {
         this.lessonRepository = lessonRepository;
-        this.studentService = studentService;
-        this.studentRepository = studentRepository1;
+        this.studentRepository = studentRepository;
     }
 
     public List<LessonDTO> findAll() {

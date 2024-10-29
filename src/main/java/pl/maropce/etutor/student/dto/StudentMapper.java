@@ -1,7 +1,5 @@
 package pl.maropce.etutor.student.dto;
 
-import pl.maropce.etutor.lesson.dto.LessonDTO;
-import pl.maropce.etutor.lesson.dto.LessonMapper;
 import pl.maropce.etutor.student.Student;
 
 public class StudentMapper {
@@ -18,11 +16,6 @@ public class StudentMapper {
         dto.setClassType(student.getClassType());
         dto.setAbout(student.getAbout());
 
-//        dto.setLessons(student.getLessons()
-//                .stream()
-//                .map(LessonMapper::toDTO)
-//                .toList());
-
         return dto;
     }
 
@@ -38,10 +31,6 @@ public class StudentMapper {
         student.setClassType(dto.getClassType());
         student.setAbout(dto.getAbout());
 
-//        student.setLessons(dto.getLessons()
-//                .stream()
-//                .map(lesson -> LessonMapper.toEntity(lesson, dto))
-//                .toList());
         return student;
         
     }

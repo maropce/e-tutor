@@ -82,7 +82,6 @@ public class AppConfig {
                     .discord("discord" + (i + 1))
                     .about(ABOUT_DESCRIPTIONS[random.nextInt(ABOUT_DESCRIPTIONS.length)])
                     .classType(CLASS_TYPES[random.nextInt(CLASS_TYPES.length)])
-                    //.lessons(new ArrayList<>())
                     .build();
             students.add(student);
         }
