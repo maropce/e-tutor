@@ -8,18 +8,19 @@ services:
     ports:
       - "8080:8080"  # Mapowanie portów aplikacji Spring Boot
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/etutor
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dpg-csj36vu8ii6s73cug9dg-a.frankfurt-postgres.render.com:5432/etutor
+      #jdbc:postgresql://db:5432/etutor
       - SPRING_DATASOURCE_USERNAME=admin
-      - SPRING_DATASOURCE_PASSWORD=admin
-    depends_on:
-      - db  # Aplikacja zależy od kontenera bazy danych
+      - SPRING_DATASOURCE_PASSWORD=wfc4G3rgooYW7de4yanXhYKqQdPxZJnj #admin
+#    depends_on:
+#      - db  # Aplikacja zależy od kontenera bazy danych
 
-  db:
-    image: postgres:17  # Obraz PostgreSQL
-    environment:
-      POSTGRES_DB: etutor  # Nazwa bazy danych
-      POSTGRES_USER: admin  # Użytkownik bazy danych
-      POSTGRES_PASSWORD: admin  # Hasło bazy danych
-    ports:
-      - "5432:5432"  # Mapowanie portów PostgreSQL
+#  db:
+#    image: postgres:17  # Obraz PostgreSQL
+#    environment:
+#      POSTGRES_DB: etutor  # Nazwa bazy danych
+#      POSTGRES_USER: admin  # Użytkownik bazy danych
+#      POSTGRES_PASSWORD: admin  # Hasło bazy danych
+#    ports:
+#      - "5432:5432"  # Mapowanie portów PostgreSQL
 
