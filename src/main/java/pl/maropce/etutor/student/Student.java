@@ -1,6 +1,7 @@
 package pl.maropce.etutor.student;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Entity

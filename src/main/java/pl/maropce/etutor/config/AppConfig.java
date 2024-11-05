@@ -115,6 +115,7 @@ public class AppConfig {
 
                 Lesson lesson = Lesson.builder()
                         .student(student)
+                        .title(student.getFirstName() + " " + student.getLastName())
                         .startDateTime(start)
                         .endDateTime(end)
                         .build();

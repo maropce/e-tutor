@@ -7,8 +7,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pl.maropce.etutor.config.AppConfig;
 import pl.maropce.etutor.student.dto.StudentDTO;
@@ -18,12 +22,15 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
 
     private final StudentService studentService;
     private final AppConfig appConfig;
+
+    private static final Logger logger = LoggerFactory.getLogger(StudentController.class);
 
 
     public StudentController(StudentService studentService, AppConfig appConfig) {
@@ -107,7 +114,9 @@ public class StudentController {
                     )
             )
     })
-    public ResponseEntity<StudentDTO> createStudent(@RequestBody StudentDTO studentDTO) throws URISyntaxException {
+    public ResponseEntity<StudentDTO> createStudent(@Valid @RequestBody StudentDTO studentDTO) throws URISyntaxException {
+
+        logger.info("Received StudentDTO: {}", studentDTO);
 
         StudentDTO save = studentService.save(studentDTO);
 

@@ -50,7 +50,7 @@ public class LessonService {
     }
 
 
-    public LessonDTO save(Long studentId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public LessonDTO save(Long studentId, String title, LocalDateTime startDateTime, LocalDateTime endDateTime) {
 
         if(!isDateOfLessonSetProperly(startDateTime, endDateTime)) {
             throw new InvalidLessonDates();
@@ -64,6 +64,7 @@ public class LessonService {
                 .orElseThrow(() -> new StudentNotFoundException(studentId));
 
         Lesson lesson = Lesson.builder()
+                .title(title)
                 .startDateTime(startDateTime)
                 .endDateTime(endDateTime)
                 .student(student)

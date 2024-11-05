@@ -6,9 +6,11 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.maropce.etutor.lesson.dto.CreateLessonRequest;
 import pl.maropce.etutor.lesson.dto.LessonDTO;
 
 import java.util.List;
@@ -138,11 +140,11 @@ public class LessonController {
                     )
             }
     )
-    public ResponseEntity<LessonDTO> createNewLesson(@RequestBody CreateLessonRequest request) {
+    public ResponseEntity<LessonDTO> createNewLesson(@Valid @RequestBody CreateLessonRequest request) {
 
         System.out.println(request);
         return ResponseEntity.ok(
-                lessonService.save(request.getStudentId(), request.getStartDateTime(), request.getEndDateTime()));
+                lessonService.save(request.getStudentId(), request.getTitle(), request.getStartDateTime(), request.getEndDateTime()));
     }
 
     @DeleteMapping("{id}")

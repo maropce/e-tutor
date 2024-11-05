@@ -10,6 +10,7 @@ public class LessonMapper {
 
         return LessonDTO.builder()
                 .id(lesson.getId())
+                .title(lesson.getTitle())
                 .startDateTime(lesson.getStartDateTime())
                 .endDateTime(lesson.getEndDateTime())
                 .studentId(lesson.getStudent().getId())
@@ -20,6 +21,7 @@ public class LessonMapper {
 
         return Lesson.builder()
                 .id(lessonDTO.getId())
+                .title(lessonDTO.getTitle())
                 .startDateTime(lessonDTO.getStartDateTime())
                 .endDateTime(lessonDTO.getEndDateTime())
                 .student(StudentMapper.toEntity(studentDTO))
