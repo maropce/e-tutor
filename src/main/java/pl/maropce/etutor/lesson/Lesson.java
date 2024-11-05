@@ -3,6 +3,8 @@ package pl.maropce.etutor.lesson;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
 import org.springframework.format.annotation.DateTimeFormat;
 import pl.maropce.etutor.student.Student;
 
@@ -28,7 +30,7 @@ public class Lesson {
     private LocalDateTime endDateTime;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     private Student student;
 
 }
