@@ -100,7 +100,7 @@ public class AppConfig {
                 LocalDateTime start;
                 LocalDateTime end;
 
-                do {
+
                     int hourOffset = random.nextInt(8) + 13;  // Generates a random hour between 8:00 and 20:00
                     int minuteOffset = random.nextBoolean() ? 0 : 30;  // Randomly picks 0 or 30 minutes
 
@@ -111,6 +111,8 @@ public class AppConfig {
                             .withNano(0);
                     int duration = random.nextInt(2) + 1;  // Randomly sets lesson duration to 1 or 2 hours
                     end = start.plusHours(duration);
+                do {
+                    start = start.plusDays(1);
                 } while (lessonService.existsOverlappingLesson(start, end));
 
                 Lesson lesson = Lesson.builder()
