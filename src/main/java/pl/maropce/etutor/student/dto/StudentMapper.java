@@ -21,6 +21,7 @@ public class StudentMapper {
 
     public static Student toEntity(StudentDTO dto) {
         Student student = new Student();
+
         student.setId(dto.getId());
         student.setFirstName(dto.getFirstName());
         student.setLastName(dto.getLastName());
@@ -29,6 +30,7 @@ public class StudentMapper {
         student.setDiscord(dto.getDiscord());
         student.setClassType(dto.getClassType());
         student.setAbout(dto.getAbout());
+
         return student;
         
     }

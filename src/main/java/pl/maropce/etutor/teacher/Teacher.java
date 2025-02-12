@@ -1,10 +1,13 @@
-package pl.maropce.etutor.student;
+package pl.maropce.etutor.teacher;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import pl.maropce.etutor.teacher.Teacher;
+import pl.maropce.etutor.student.Student;
 import pl.maropce.etutor.user.AppUserDetails;
+import pl.maropce.etutor.user.AppUserDetails;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -12,24 +15,18 @@ import pl.maropce.etutor.user.AppUserDetails;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Student {
+public class Teacher {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String firstName;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String discord;
-    private String about;
-    private String classType;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_id")
-    private Teacher teacher;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_details_id", nullable = false)
     private AppUserDetails appUserDetails;
+
+    @OneToMany(mappedBy = "teacher", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Student> students = new ArrayList<>();
 }

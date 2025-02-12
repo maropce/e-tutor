@@ -14,7 +14,7 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
             "LOWER(s.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(s.lastName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(s.discord) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(s.phone) LIKE LOWER(CONCAT('%', :keyword, '%'))" )
+            "LOWER(REPLACE(s.phone, ' ', '')) LIKE LOWER(CONCAT('%', REPLACE(:keyword, ' ', ''), '%'))")
     List<Student> findByKeyword(String keyword);
 
 

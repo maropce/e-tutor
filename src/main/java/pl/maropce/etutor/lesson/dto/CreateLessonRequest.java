@@ -10,16 +10,19 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor
-public class LessonDTO {
+@ToString
+public class CreateLessonRequest {
 
-    private Long id;
+    @NotNull(message = "Student ID cannot be null")
+    private Long studentId;
 
     @NotBlank
-    @Size(min = 2, max = 50)
+    @Size(min = 1, max = 50)
     private String title;
+
 
     @NotNull(message = "Start date and time cannot be null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -29,7 +32,4 @@ public class LessonDTO {
     @NotNull(message = "End date and time cannot be null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime endDateTime;
-
-    @NotNull(message = "Student ID cannot be null")
-    private Long studentId;
 }

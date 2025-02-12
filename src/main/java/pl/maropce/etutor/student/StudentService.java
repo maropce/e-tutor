@@ -4,18 +4,21 @@ import org.springframework.stereotype.Service;
 import pl.maropce.etutor.student.dto.StudentDTO;
 import pl.maropce.etutor.student.dto.StudentMapper;
 import pl.maropce.etutor.student.exception.StudentNotFoundException;
+import pl.maropce.etutor.teacher.Teacher;
+import pl.maropce.etutor.teacher.TeacherRepository;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class StudentService {
 
     private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
 
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, TeacherRepository teacherRepository) {
         this.studentRepository = studentRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     public List<StudentDTO> findAll() {
@@ -33,6 +36,7 @@ public class StudentService {
     }
 
     public StudentDTO save(StudentDTO student) {
+
         Student save = studentRepository.save(
                 StudentMapper.toEntity(student));
 
@@ -87,6 +91,16 @@ public class StudentService {
     }
 
     public void deleteById(Long id) {
+        Student student = studentRepository.findById(id)
+                        .orElseThrow(() -> new StudentNotFoundException(id));
+
+        Teacher teacher = student.getTeacher();
+        teacher.getStudents().remove(student);
+        student.setTeacher(null);
+
+        teacherRepository.save(teacher);
+
+
         studentRepository.deleteById(id);
     }
 }

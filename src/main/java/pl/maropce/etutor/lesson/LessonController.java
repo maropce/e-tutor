@@ -2,14 +2,24 @@ package pl.maropce.etutor.lesson;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.maropce.etutor.config.AppConfig;
+import pl.maropce.etutor.lesson.dto.CreateLessonRequest;
 import pl.maropce.etutor.lesson.dto.LessonDTO;
+import pl.maropce.etutor.lesson.dto.UpdateLessonRequest;
 
-import java.time.LocalDateTime;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -18,21 +28,71 @@ public class LessonController {
 
 
     private final LessonService lessonService;
+    private final AppConfig appConfig;
 
-    public LessonController(LessonService lessonService) {
+    public LessonController(LessonService lessonService, AppConfig appConfig) {
         this.lessonService = lessonService;
+        this.appConfig = appConfig;
     }
 
     @GetMapping
-    public ResponseEntity<List<LessonDTO>> findAll() {
+    @Operation(
+            summary = "Retrieve all lessons",
+            description = "This endpoint retrieves all lessons available in the system.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Lessons retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = LessonDTO.class))
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<List<LessonDTO>> findAll(Pageable pageable) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(
-                lessonService.findAll());
+                lessonService.findAll(pageable));
     }
 
+
     @GetMapping("{id}")
+    @Operation(
+            summary = "Get a lesson by ID",
+            description = "Retrieves a lesson based on the provided ID.",
+            parameters = {
+                    @Parameter(name = "id", description = "ID of the lesson to retrieve", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Lesson retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = LessonDTO.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Lesson not found",
+                            content = @Content()
+                    )
+            }
+    )
     public ResponseEntity<LessonDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 lessonService.findById(id));
+    }
+
+    @GetMapping("/next")
+    public ResponseEntity<LessonDTO> getNextLesson() {
+        return ResponseEntity.ok(
+                lessonService.findNext());
     }
 
     @GetMapping("/student/{studentId}")
@@ -43,9 +103,21 @@ public class LessonController {
                     @Parameter(name = "studentId", description = "ID of the student whose lessons are to be retrieved", required = true)
             },
             responses = {
-            @ApiResponse(responseCode = "200", description = "Lessons retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Student not found"),
-    })
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Lessons retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = LessonDTO.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Student not found",
+                            content = @Content()
+                    )
+            }
+    )
     public ResponseEntity<List<LessonDTO>> findAllByStudent(@PathVariable Long studentId) {
         return ResponseEntity.ok(
                 lessonService.findAllByStudent(studentId));
@@ -54,30 +126,85 @@ public class LessonController {
     @PostMapping("/create")
     @Operation(
             summary = "Create a new lesson",
-            description = "Creates a new lesson for the specified student with start and end date-time.",
-            parameters = {
-                    @Parameter(name = "studentId", description = "ID of the student", required = true),
-                    @Parameter(name = "startDateTime", description = "Start date and time of the lesson (format: yyyy-MM-dd'T'HH:mm)", required = true),
-                    @Parameter(name = "endDateTime", description = "End date and time of the lesson (format: yyyy-MM-dd'T'HH:mm)", required = true)
-            },
+            description = "Creates a new lesson for a student based on the provided student ID, start date, and end date.",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Details of the lesson to create, including the student ID, start time, and end time in ISO date-time format (yyyy-MM-dd'T'HH:mm:ss)",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CreateLessonRequest.class)
+                    )
+            ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Lesson created successfully"),
-                    @ApiResponse(responseCode = "400", description = "Invalid lesson dates. Probably start date is after end date"),
-                    @ApiResponse(responseCode = "409", description = "Lesson times overlap with an existing lesson")
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Lesson created successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = LessonDTO.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid dates. Check if your start date is before the end date",
+                            content = @Content()
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Lesson not found",
+                            content = @Content()
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Lesson times overlap with an existing lesson!",
+                            content = @Content()
+                    )
             }
     )
-    public ResponseEntity<LessonDTO> createNewLesson(
-            @RequestParam Long studentId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDateTime,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDateTime) {
+    public ResponseEntity<LessonDTO> createNewLesson(@Valid @RequestBody CreateLessonRequest request) throws URISyntaxException {
 
-        return ResponseEntity.ok(
-                lessonService.save(studentId, startDateTime, endDateTime));
+        LessonDTO save = lessonService.save(request);
+
+        String resourcePath = appConfig.getApplicationURL() + "/api/lessons/" + save.getId();
+
+        return ResponseEntity.created(new URI(resourcePath))
+                .body(save);
     }
 
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(
+            summary = "Delete a lesson by ID",
+            description = "Deletes a lesson based on the provided ID.",
+            parameters = {
+                    @Parameter(name = "id", description = "ID of the lesson to delete", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Lesson deleted successfully"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Lesson not found",
+                            content = @Content()
+                    )
+            }
+    )
     public void deleteStudent(@PathVariable Long id) {
         lessonService.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LessonDTO> update(@PathVariable Long id, @RequestBody UpdateLessonRequest lessonRequest) {
+        LessonDTO lessonDTO = lessonService.updateLesson(id, lessonRequest);
+
+        return ResponseEntity.ok(lessonDTO);
+    }
+
+    @GetMapping("/test")
+    public List<LessonDTO> getLessonsByMonth(@RequestParam("month") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
+        return lessonService.findLessonsByMonth(month);
+    }
+
 }
