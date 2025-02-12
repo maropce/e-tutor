@@ -10,4 +10,8 @@ public class LessonNotFoundException extends BaseException {
     public LessonNotFoundException(Long id) {
         super(HttpStatus.NOT_FOUND, "Lesson with id " + id + " not found");
     }
+
+    public LessonNotFoundException(String customMessage) {
+        super(HttpStatus.NOT_FOUND, customMessage);
+    }
 }

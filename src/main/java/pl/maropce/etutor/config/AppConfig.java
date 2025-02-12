@@ -4,16 +4,22 @@ import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.maropce.etutor.lesson.Lesson;
 import pl.maropce.etutor.lesson.LessonRepository;
 import pl.maropce.etutor.lesson.LessonService;
+import pl.maropce.etutor.statistics.MonthlyStatistics;
+import pl.maropce.etutor.statistics.MonthlyStatisticsRepository;
+import pl.maropce.etutor.statistics.MonthlyStatisticsService;
 import pl.maropce.etutor.student.Student;
 import pl.maropce.etutor.student.StudentRepository;
+import pl.maropce.etutor.teacher.Teacher;
+import pl.maropce.etutor.teacher.TeacherRepository;
+import pl.maropce.etutor.user.AppUserDetails;
+import pl.maropce.etutor.user.AppUserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Configuration
 @Getter
@@ -22,14 +28,25 @@ public class AppConfig {
     private final StudentRepository studentRepository;
     private final LessonRepository lessonRepository;
     private final LessonService lessonService;
+    private final TeacherRepository teacherRepository;
+    private final AppUserRepository appUserRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private final MonthlyStatisticsService monthlyStatisticsService;
+    private final MonthlyStatisticsRepository monthlyStatisticsRepository;
 
     @Value("${app.url}")
     private String applicationURL;
 
-    public AppConfig(StudentRepository studentRepository, LessonRepository lessonRepository, LessonService lessonService) {
+    public AppConfig(StudentRepository studentRepository, LessonRepository lessonRepository, LessonService lessonService, TeacherRepository teacherRepository, AppUserRepository appUserRepository, BCryptPasswordEncoder bCryptPasswordEncoder, MonthlyStatisticsService monthlyStatisticsService, MonthlyStatisticsRepository monthlyStatisticsRepository) {
         this.studentRepository = studentRepository;
         this.lessonRepository = lessonRepository;
         this.lessonService = lessonService;
+        this.teacherRepository = teacherRepository;
+        this.appUserRepository = appUserRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.monthlyStatisticsService = monthlyStatisticsService;
+        this.monthlyStatisticsRepository = monthlyStatisticsRepository;
     }
 
     private static final String[] FIRST_NAMES = {
@@ -64,8 +81,14 @@ public class AppConfig {
 
     @PostConstruct
     public void addStudentsWithLessons() {
+
         List<Student> students = saveStudents();
+        saveTeachers(students);
         addSampleLessons(students);
+
+        MonthlyStatistics statistics = monthlyStatisticsService.generateMonthlyStatistics();
+        monthlyStatisticsRepository.save(statistics);
+
     }
 
     private List<Student> saveStudents() {
@@ -84,10 +107,86 @@ public class AppConfig {
                     .classType(CLASS_TYPES[random.nextInt(CLASS_TYPES.length)])
                     .build();
             students.add(student);
+            AppUserDetails appUserDetails = AppUserDetails.builder()
+                    .username(student.getEmail())
+                    .password(bCryptPasswordEncoder.encode(student.getEmail()))
+                    .role("STUDENT")
+                    .build();
+            appUserRepository.save(appUserDetails);
+            student.setAppUserDetails(appUserDetails);
         }
 
         return studentRepository.saveAll(students);
     }
+
+    public void saveTeachers(List<Student> allStudents) {
+        //allStudents = studentRepository.findAll();
+        Random random = new Random();
+        // 1. Tworzymy 5 przykładowych nauczycieli
+        List<Teacher> teachers = new ArrayList<>();
+        for (int i = 1; i <= 5; i++) {
+            Teacher teacher = new Teacher();
+            teacher.setFirstName(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)]);
+
+            // 2. Losujemy liczbę uczniów, którą przypiszemy do nauczyciela (3-6 uczniów)
+            int numberOfStudents = new Random().nextInt(4) + 3; // losuje liczbę od 3 do 6
+            Collections.shuffle(allStudents); // Tasujemy listę uczniów
+
+            // 3. Przypisujemy losową liczbę uczniów
+            List<Student> assignedStudents = allStudents.subList(0, numberOfStudents);
+
+            AppUserDetails appUserDetails = AppUserDetails.builder()
+                    .username(teacher.getFirstName())
+                    .password(bCryptPasswordEncoder.encode(teacher.getFirstName()))
+                    .role("TEACHER")
+                    .build();
+            teacher.setAppUserDetails(appUserDetails);
+
+            //appUserRepository.save(appUserDetails);
+            teacherRepository.save(teacher);
+
+            for (Student student : assignedStudents) {
+                student.setTeacher(teacher);
+            }
+
+            teacher.setStudents(assignedStudents);
+
+            teachers.add(teacher);
+
+            //teacherRepository.save(teacher);
+
+        }
+        teacherRepository.saveAll(teachers);
+    }
+
+    public void saveTeachers2(List<Student> allStudents) {
+        Random random = new Random();
+
+        // Tworzymy 5 przykładowych nauczycieli
+        for (int i = 1; i <= 5; i++) {
+            Teacher teacher = new Teacher();
+            teacher.setFirstName(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)]);
+
+            // Losujemy liczbę uczniów (3-6 uczniów)
+            int numberOfStudents = new Random().nextInt(4) + 3;
+            Collections.shuffle(allStudents);
+
+            // Przypisujemy losową liczbę uczniów
+            List<Student> assignedStudents = new ArrayList<>(allStudents.subList(0, numberOfStudents));
+
+            // Ustawiamy nauczyciela dla każdego ucznia
+            for (Student student : assignedStudents) {
+                student.setTeacher(teacher); // Przypisanie nauczyciela
+            }
+
+            teacher.setStudents(assignedStudents); // Dodanie uczniów do nauczyciela
+
+            // Zapisujemy nauczyciela razem z przypisanymi uczniami
+            teacherRepository.save(teacher);
+
+        }
+    }
+
 
     private void addSampleLessons(List<Student> students) {
         Random random = new Random();
@@ -113,6 +212,7 @@ public class AppConfig {
                     end = start.plusHours(duration);
                 do {
                     start = start.plusDays(1);
+                    end = end.plusDays(1);
                 } while (lessonService.existsOverlappingLesson(start, end));
 
                 Lesson lesson = Lesson.builder()
@@ -130,4 +230,6 @@ public class AppConfig {
             studentRepository.save(student);
         });
     }
+
+
 }

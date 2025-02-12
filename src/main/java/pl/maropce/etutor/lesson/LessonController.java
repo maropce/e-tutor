@@ -7,12 +7,19 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.maropce.etutor.config.AppConfig;
 import pl.maropce.etutor.lesson.dto.CreateLessonRequest;
 import pl.maropce.etutor.lesson.dto.LessonDTO;
+import pl.maropce.etutor.lesson.dto.UpdateLessonRequest;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,9 +28,11 @@ public class LessonController {
 
 
     private final LessonService lessonService;
+    private final AppConfig appConfig;
 
-    public LessonController(LessonService lessonService) {
+    public LessonController(LessonService lessonService, AppConfig appConfig) {
         this.lessonService = lessonService;
+        this.appConfig = appConfig;
     }
 
     @GetMapping
@@ -41,10 +50,16 @@ public class LessonController {
                     )
             }
     )
-    public ResponseEntity<List<LessonDTO>> findAll() {
+    public ResponseEntity<List<LessonDTO>> findAll(Pageable pageable) {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return ResponseEntity.ok(
-                lessonService.findAll());
+                lessonService.findAll(pageable));
     }
+
 
     @GetMapping("{id}")
     @Operation(
@@ -72,6 +87,12 @@ public class LessonController {
     public ResponseEntity<LessonDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(
                 lessonService.findById(id));
+    }
+
+    @GetMapping("/next")
+    public ResponseEntity<LessonDTO> getNextLesson() {
+        return ResponseEntity.ok(
+                lessonService.findNext());
     }
 
     @GetMapping("/student/{studentId}")
@@ -140,11 +161,14 @@ public class LessonController {
                     )
             }
     )
-    public ResponseEntity<LessonDTO> createNewLesson(@Valid @RequestBody CreateLessonRequest request) {
+    public ResponseEntity<LessonDTO> createNewLesson(@Valid @RequestBody CreateLessonRequest request) throws URISyntaxException {
 
-        System.out.println(request);
-        return ResponseEntity.ok(
-                lessonService.save(request.getStudentId(), request.getTitle(), request.getStartDateTime(), request.getEndDateTime()));
+        LessonDTO save = lessonService.save(request);
+
+        String resourcePath = appConfig.getApplicationURL() + "/api/lessons/" + save.getId();
+
+        return ResponseEntity.created(new URI(resourcePath))
+                .body(save);
     }
 
     @DeleteMapping("{id}")
@@ -170,4 +194,17 @@ public class LessonController {
     public void deleteStudent(@PathVariable Long id) {
         lessonService.deleteById(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LessonDTO> update(@PathVariable Long id, @RequestBody UpdateLessonRequest lessonRequest) {
+        LessonDTO lessonDTO = lessonService.updateLesson(id, lessonRequest);
+
+        return ResponseEntity.ok(lessonDTO);
+    }
+
+    @GetMapping("/test")
+    public List<LessonDTO> getLessonsByMonth(@RequestParam("month") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate month) {
+        return lessonService.findLessonsByMonth(month);
+    }
+
 }
